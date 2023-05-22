@@ -3,7 +3,7 @@ const Card = require('../models/card');
 const cardController = require('../controllers/card');
 
 cardsRouter.get('/', cardController.getAllCards);
-cardsRouter.get('/:cardId', cardController.deleteCardById);
+cardsRouter.delete('/:cardId', cardController.deleteCardById);
 cardsRouter.post('/', cardController.createCard);
 cardsRouter.put('/:cardId/likes', cardController.addLike);
 cardsRouter.delete('/:cardId/likes', cardController.removeLike);
