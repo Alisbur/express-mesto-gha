@@ -15,6 +15,10 @@ const getAllUsers = (req, res) => {
 
 const getUserById = (req, res) => {
   User.findById(req.params.id)
+    .then(data => {
+      if(!data) return Promise.reject({name:"CastError"})
+      else return data;
+    })
     .then(data => res.status(200).send({ data: data }))
     .catch(err => {
       err.name==="CastError"
@@ -49,7 +53,11 @@ const updateProfile = (req, res) => {
         runValidators: true,
         upsert: true
     })
-    .then(data => res.status(201).send({ data: data }))
+    .then(data => {
+      if(!data) return Promise.reject({name:"CastError"})
+      else return data;
+    })
+    .then(data => res.status(200).send({ data: data }))
     .catch(err =>
       err.name==="CastError"
         ? res.status(NOT_FOUND_ERROR_CODE).send(NOT_FOUND_ERROR_MESSAGE)
@@ -72,7 +80,11 @@ const updateAvatar = (req, res) => {
         runValidators: true,
         upsert: true
     })
-    .then(data => res.status(201).send({ data: data }))
+    .then(data => {
+      if(!data) return Promise.reject({name:"CastError"})
+      else return data;
+    })
+    .then(data => res.status(200).send({ data: data }))
     .catch(err =>
       err.name==="CastError"
         ? res.status(NOT_FOUND_ERROR_CODE).send(NOT_FOUND_ERROR_MESSAGE)

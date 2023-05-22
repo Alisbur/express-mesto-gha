@@ -15,6 +15,10 @@ const getAllCards = (req, res) => {
 
 const deleteCardById = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
+    .then(data => {
+      if(!data) return Promise.reject({name:"CastError"})
+      else return data;
+    })
     .then(card => res.status(200).send({ data: card }))
     .catch(err => {
       err.name==="CastError"
@@ -39,7 +43,11 @@ const addLike = (req, res) => {
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true })
-    .then(card => res.status(201).send({ data: card }))
+    .then(data => {
+      if(!data) return Promise.reject({name:"CastError"})
+      else return data;
+    })
+    .then(card => res.status(200).send({ data: card }))
     .catch(err => {
       err.name==="CastError"
         ? res.status(NOT_FOUND_ERROR_CODE).send(NOT_FOUND_ERROR_MESSAGE)
@@ -52,7 +60,11 @@ const removeLike = (req, res) => {
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true })
-    .then(card => res.status(201).send({ data: card }))
+    .then(data => {
+      if(!data) return Promise.reject({name:"CastError"})
+      else return data;
+    })
+    .then(card => res.status(200).send({ data: card }))
     .catch(err => {
       console.log(err.name);
       err.name==="CastError"

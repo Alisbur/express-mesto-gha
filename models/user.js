@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
       type: String,
+      required: true,
       validate: {
           validator(v) {
             const regex = new RegExp(/https?:\/\/(\w|\d|\/)+\.\w+/);
@@ -22,7 +23,6 @@ const userSchema = new mongoose.Schema({
           },
           message: 'Ошибка в адресе аватара',
       },
-      default: "http://test.test"
   }
 }, {
   versionKey: false
