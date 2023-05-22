@@ -1,16 +1,10 @@
 const User = require('../models/user');
-
-const VALIDATION_ERROR_CODE = 400;
-const VALIDATION_ERROR_MESSAGE = { message: `переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля`};
-const NOT_FOUND_ERROR_CODE = 404;
-const NOT_FOUND_ERROR_MESSAGE = { message: `карточка или пользователь не найден`};
-const DEFAULT_ERROR_CODE = 500;
-const DEFAULT_ERROR_MESSAGE = { message: `ошибка по-умолчанию`};
+const E = require('../errors');
 
 const getAllUsers = (req, res) => {
   User.find({})
     .then(data => res.status(200).send({ data: data }))
-    .catch(err => res.status(DEFAULT_ERROR_CODE).send(DEFAULT_ERROR_MESSAGE));
+    .catch(err => res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE));
 }
 
 const getUserById = (req, res) => {
@@ -22,8 +16,8 @@ const getUserById = (req, res) => {
     .then(data => res.status(200).send({ data: data }))
     .catch(err => {
       err.name==="CastError"
-        ? res.status(NOT_FOUND_ERROR_CODE).send(NOT_FOUND_ERROR_MESSAGE)
-        : res.status(DEFAULT_ERROR_CODE).send(DEFAULT_ERROR_MESSAGE);
+        ? res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE)
+        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
     });
 }
 
@@ -32,8 +26,8 @@ const createUser = (req, res) => {
     .then(data => res.status(201).send({ data: data }))
     .catch(err => {
       err.name==="ValidationError"
-        ? res.status(VALIDATION_ERROR_CODE).send(VALIDATION_ERROR_MESSAGE)
-        : res.status(DEFAULT_ERROR_CODE).send(DEFAULT_ERROR_MESSAGE);
+        ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
+        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
     });
 }
 
@@ -60,10 +54,10 @@ const updateProfile = (req, res) => {
     .then(data => res.status(200).send({ data: data }))
     .catch(err =>
       err.name==="CastError"
-        ? res.status(NOT_FOUND_ERROR_CODE).send(NOT_FOUND_ERROR_MESSAGE)
+        ? res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE)
         : err.name==="ValidationError"
-          ? res.status(VALIDATION_ERROR_CODE).send(VALIDATION_ERROR_MESSAGE)
-          : res.status(DEFAULT_ERROR_CODE).send(DEFAULT_ERROR_MESSAGE));
+          ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
+          : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE));
 }
 
 const updateAvatar = (req, res) => {
@@ -87,10 +81,10 @@ const updateAvatar = (req, res) => {
     .then(data => res.status(200).send({ data: data }))
     .catch(err =>
       err.name==="CastError"
-        ? res.status(NOT_FOUND_ERROR_CODE).send(NOT_FOUND_ERROR_MESSAGE)
+        ? res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE)
         : err.name==="ValidationError"
-          ? res.status(VALIDATION_ERROR_CODE).send(VALIDATION_ERROR_MESSAGE)
-          : res.status(DEFAULT_ERROR_CODE).send(DEFAULT_ERROR_MESSAGE));
+          ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
+          : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE));
 }
 
 module.exports = {getAllUsers, getUserById, createUser, updateProfile, updateAvatar};

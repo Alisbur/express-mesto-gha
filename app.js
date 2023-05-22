@@ -3,6 +3,7 @@ const express = require('express');
 const { PORT = 3000 } = process.env;
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const E = require('./errors');
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
@@ -21,6 +22,7 @@ app.use((req, res, next) => {
 
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
+app.use('/', (req,res) => res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE));
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
