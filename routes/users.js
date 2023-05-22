@@ -1,22 +1,7 @@
-/* eslint-disable prefer-regex-literals */
-
 const usersRouter = require('express').Router();
 const userController = require('../controllers/user');
-const E = require('../errors');
-
-const regexp = new RegExp(/[0-9a-z]{24}/);
-
-const checkId = (req, res, next) => {
-  if (!regexp.test(req.params.id)) {
-    res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE);
-    return;
-  }
-
-  next();
-};
 
 usersRouter.get('/', userController.getAllUsers);
-usersRouter.get('/:id', checkId);
 usersRouter.get('/:id', userController.getUserById);
 usersRouter.post('/', userController.createUser);
 usersRouter.patch('/me', userController.updateProfile);

@@ -13,15 +13,22 @@ const getAllUsers = (req, res) => {
 
 const getUserById = (req, res) => {
   User.findById(req.params.id)
+    .orFail(() => {
+      throw new Error('NotFound');
+    })
     .then((data) => {
       if (!data) return Promise.reject({ name: 'CastError' });
       return data;
     })
     .then((data) => res.send({ data }))
     .catch((err) => {
-      err.name === 'CastError'
-        ? res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE)
-        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      if (err.message === 'NotFound') {
+        res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
+      } else {
+        err.name === 'CastError'
+          ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
+          : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      }
     });
 };
 
@@ -47,20 +54,20 @@ const updateProfile = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: true,
     },
   )
-    .then((data) => {
-      if (!data) return Promise.reject({ name: 'CastError' });
-      return data;
+    .orFail(() => {
+      throw new Error('NotFound');
     })
     .then((data) => res.send({ data }))
-    .catch((err) => (
-      err.name === 'CastError'
-        ? res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE)
-        : err.name === 'ValidationError'
-          ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
-          : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE)));
+    .catch((err) => {
+      if (err.message === 'NotFound') {
+        res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
+      }
+      err.name === 'CastError' || err.name === 'ValidationError'
+        ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
+        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+    });
 };
 
 const updateAvatar = (req, res) => {
@@ -77,17 +84,18 @@ const updateAvatar = (req, res) => {
       upsert: true,
     },
   )
-    .then((data) => {
-      if (!data) return Promise.reject({ name: 'CastError' });
-      return data;
+    .orFail(() => {
+      throw new Error('NotFound');
     })
     .then((data) => res.send({ data }))
-    .catch((err) => (
-      err.name === 'CastError'
-        ? res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE)
-        : err.name === 'ValidationError'
-          ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
-          : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE)));
+    .catch((err) => {
+      if (err.message === 'NotFound') {
+        res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
+      }
+      err.name === 'CastError' || err.name === 'ValidationError'
+        ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
+        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+    });
 };
 
 module.exports = {

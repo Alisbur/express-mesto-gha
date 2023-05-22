@@ -12,15 +12,20 @@ const getAllCards = (req, res) => {
 
 const deleteCardById = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
-    .then((data) => {
-      if (!data) return Promise.reject({ name: 'CastError' });
-      return data;
+    .orFail(() => {
+      throw new Error('NotFound');
     })
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      res.send({ data: card });
+    })
     .catch((err) => {
-      err.name === 'CastError'
-        ? res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE)
-        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      if (err.message === 'NotFound') {
+        res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
+      } else {
+        err.name === 'CastError'
+          ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
+          : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      }
     });
 };
 
@@ -41,15 +46,22 @@ const addLike = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(() => {
+      throw new Error('NotFound');
+    })
     .then((data) => {
       if (!data) return Promise.reject({ name: 'CastError' });
       return data;
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      err.name === 'CastError'
-        ? res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE)
-        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      if (err.message === 'NotFound') {
+        res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
+      } else {
+        err.name === 'CastError'
+          ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
+          : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      }
     });
 };
 
@@ -59,15 +71,22 @@ const removeLike = (req, res) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
+    .orFail(() => {
+      throw new Error('NotFound');
+    })
     .then((data) => {
       if (!data) return Promise.reject({ name: 'CastError' });
       return data;
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      err.name === 'CastError'
-        ? res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE)
-        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      if (err.message === 'NotFound') {
+        res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
+      } else {
+        err.name === 'CastError'
+          ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
+          : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      }
     });
 };
 
