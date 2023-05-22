@@ -1,5 +1,6 @@
+/* eslint-disable prefer-regex-literals */
+
 const usersRouter = require('express').Router();
-const User = require('../models/user');
 const userController = require('../controllers/user');
 const E = require('../errors');
 

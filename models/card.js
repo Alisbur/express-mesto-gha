@@ -1,11 +1,14 @@
-const mongoose = require("mongoose");
+/* eslint-disable prefer-regex-literals */
+
+const mongoose = require('mongoose');
+
 const cardSchema = new mongoose.Schema({
 
   name: {
     type: String,
     required: true,
     minlength: 2,
-    maxlength: 30
+    maxlength: 30,
   },
   link: {
     type: String,
@@ -16,25 +19,24 @@ const cardSchema = new mongoose.Schema({
         return regex.test(v);
       },
       message: 'Ошибка в адресе изображения',
-    }
+    },
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
-    required: true
+    required: true,
   },
   likes: {
     type: Array,
-    required: true,
-    default: []
+    default: [],
   },
   createdAt: {
     type: Date,
     required: true,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 }, {
-    versionKey: false
+  versionKey: false,
 });
 
 module.exports = mongoose.model('card', cardSchema);

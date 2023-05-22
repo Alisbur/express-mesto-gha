@@ -1,5 +1,6 @@
+/* eslint-disable prefer-regex-literals */
+
 const cardsRouter = require('express').Router();
-const Card = require('../models/card');
 const cardController = require('../controllers/card');
 const E = require('../errors');
 
