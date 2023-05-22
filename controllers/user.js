@@ -81,7 +81,6 @@ const updateAvatar = (req, res) => {
     {
       new: true,
       runValidators: true,
-      upsert: true,
     },
   )
     .orFail(() => {
