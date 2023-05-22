@@ -8,7 +8,7 @@ const VALIDATION_ERROR_MESSAGE = { message: `переданы некоррект
 const regexp = new RegExp(/[0-9a-z]{24}/);
 
 const checkId = (req, res, next) => {
-  if (!regexp.test(req.params._id)) {
+  if (!regexp.test(req.params.id)) {
     res.status(VALIDATION_ERROR_CODE).send(VALIDATION_ERROR_MESSAGE);
     return;
   }
