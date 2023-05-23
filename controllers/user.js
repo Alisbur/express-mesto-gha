@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 /* eslint-disable no-unused-expressions */
 /* eslint-disable prefer-promise-reject-errors */
 
@@ -63,6 +62,7 @@ const updateProfile = (req, res) => {
     .catch((err) => {
       if (err.message === 'NotFound') {
         res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
+        return;
       }
       err.name === 'CastError' || err.name === 'ValidationError'
         ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
@@ -90,6 +90,7 @@ const updateAvatar = (req, res) => {
     .catch((err) => {
       if (err.message === 'NotFound') {
         res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
+        return;
       }
       err.name === 'CastError' || err.name === 'ValidationError'
         ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
