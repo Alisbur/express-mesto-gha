@@ -49,10 +49,6 @@ const addLike = (req, res) => {
     .orFail(() => {
       throw new Error('NotFound');
     })
-    .then((data) => {
-      if (!data) return Promise.reject({ name: 'CastError' });
-      return data;
-    })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.message === 'NotFound') {
@@ -73,10 +69,6 @@ const removeLike = (req, res) => {
   )
     .orFail(() => {
       throw new Error('NotFound');
-    })
-    .then((data) => {
-      if (!data) return Promise.reject({ name: 'CastError' });
-      return data;
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {

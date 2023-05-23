@@ -15,10 +15,6 @@ const getUserById = (req, res) => {
     .orFail(() => {
       throw new Error('NotFound');
     })
-    .then((data) => {
-      if (!data) return Promise.reject({ name: 'CastError' });
-      return data;
-    })
     .then((data) => res.send({ data }))
     .catch((err) => {
       if (err.message === 'NotFound') {
