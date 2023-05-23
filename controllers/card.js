@@ -21,11 +21,11 @@ const deleteCardById = (req, res) => {
     .catch((err) => {
       if (err.message === 'NotFound') {
         res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
-      } else {
-        err.name === 'CastError'
-          ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
-          : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+        return;
       }
+      err.name === 'CastError'
+        ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
+        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
     });
 };
 
@@ -57,11 +57,11 @@ const addLike = (req, res) => {
     .catch((err) => {
       if (err.message === 'NotFound') {
         res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
-      } else {
-        err.name === 'CastError'
-          ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
-          : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+        return;
       }
+      err.name === 'CastError'
+        ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
+        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
     });
 };
 
@@ -82,11 +82,11 @@ const removeLike = (req, res) => {
     .catch((err) => {
       if (err.message === 'NotFound') {
         res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
-      } else {
-        err.name === 'CastError'
-          ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
-          : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+        return;
       }
+      err.name === 'CastError'
+        ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
+        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
     });
 };
 
