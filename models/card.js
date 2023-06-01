@@ -39,4 +39,17 @@ const cardSchema = new mongoose.Schema({
   versionKey: false,
 });
 
+/* cardSchema.statics.isMyCard = function (_Id, userId) {
+  return this.findOne({ _id })
+    .then((card) => {
+      // не нашёлся — отклоняем промис
+      if (!user) {
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
+
+      // нашёлся — сравниваем хеши
+      return bcrypt.compare(password, user.password);
+    });
+}; */
+
 module.exports = mongoose.model('card', cardSchema);

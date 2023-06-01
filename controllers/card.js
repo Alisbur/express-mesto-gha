@@ -11,13 +11,19 @@ const getAllCards = (req, res) => {
 };
 
 const deleteCardById = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
+  Card.findById(req.params.cardId)
     .orFail(() => {
       throw new Error('NotFound');
     })
-    .then((card) => {
-      res.send({ data: card });
+    .then((card) => card.owner.equals(req.user._id))
+    .then((match) => {
+      console.log(match);
+      if (!match) {
+        return Promise.reject(new Error());
+      }
+      return Card.findByIdAndRemove(req.params.cardId);
     })
+    .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.message === 'NotFound') {
         res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);

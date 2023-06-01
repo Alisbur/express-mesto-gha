@@ -14,14 +14,6 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-/* app.use((req, res, next) => {
-  req.user = {
-    _id: '646a75d228f1be4abc9acbfd',
-  };
-
-  next();
-}); */
-
 app.post('/signin', login);
 app.post('/signup', createUser);
 
