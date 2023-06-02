@@ -1,76 +1,55 @@
-/* eslint-disable no-unused-expressions */
-/* eslint-disable prefer-promise-reject-errors */
-
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const E = require('../errors');
+const ValidationError = require('../errors/validation-error');
+const NotFoundError = require('../errors/not-found-error');
+const ConflictError = require('../errors/conflict-error');
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
-  User.findOne({ email }).select('+password')
-    .then((user) => {
-      if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
-      }
-
-      bcrypt.compare(password, user.password)
-        .then((match) => {
-          if (!match) {
-            return Promise.reject(new Error('Неправильные почта или пароль'));
-          }
-          return user;
-        });
-      return user;
-    })
+  User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign({ _id: user._id }, 'secret-key', { expiresIn: '7d' });
       res.send({ token });
     })
-    .catch(() => res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE));
+    .catch(next);
 };
 
-const getAllUsers = (req, res) => {
+const getAllUsers = (req, res, next) => {
   User.find({})
     .then((data) => res.send({ data }))
-    .catch(() => res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE));
+    .catch(next);
 };
 
-const getCurrentUser = (req, res) => {
-  User.findById(req.user._id)
+const getCurrentUser = (req, res, next) => {
+  User.findById(req.user._id).select('+password')
     .orFail(() => {
-      throw new Error('NotFound');
+      throw new NotFoundError();
     })
     .then((data) => res.send({ data }))
     .catch((err) => {
-      if (err.message === 'NotFound') {
-        res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
-        return;
+      if (err.name === 'CastError') {
+        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
       }
-      err.name === 'CastError'
-        ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
-        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      next(err);
     });
 };
 
-const getUserById = (req, res) => {
+const getUserById = (req, res, next) => {
   User.findById(req.params.id)
     .orFail(() => {
-      throw new Error('NotFound');
+      throw new NotFoundError();
     })
     .then((data) => res.send({ data }))
     .catch((err) => {
-      if (err.message === 'NotFound') {
-        res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
-        return;
+      if (err.name === 'CastError') {
+        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
       }
-      err.name === 'CastError'
-        ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
-        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      next(err);
     });
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   bcrypt.hash(req.body.password, 10)
     .then((hash) => {
       const userData = {
@@ -84,13 +63,17 @@ const createUser = (req, res) => {
     })
     .then((data) => res.status(201).send({ data }))
     .catch((err) => {
-      err.name === 'ValidationError'
-        ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
-        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      if (err.name === 'ValidationError') {
+        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
+      }
+      if (err.code === 11000) {
+        next(new ConflictError());
+      }
+      next(err);
     });
 };
 
-const updateProfile = (req, res) => {
+const updateProfile = (req, res, next) => {
   const newData = req.body;
 
   if (req.body.name) { newData.name = req.body.name; }
@@ -105,21 +88,18 @@ const updateProfile = (req, res) => {
     },
   )
     .orFail(() => {
-      throw new Error('NotFound');
+      throw new NotFoundError();
     })
     .then((data) => res.send({ data }))
     .catch((err) => {
-      if (err.message === 'NotFound') {
-        res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
-        return;
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
       }
-      err.name === 'CastError' || err.name === 'ValidationError'
-        ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
-        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      next(err);
     });
 };
 
-const updateAvatar = (req, res) => {
+const updateAvatar = (req, res, next) => {
   const newData = req.body;
 
   if (req.body.avatar) { newData.avatar = req.body.avatar; }
@@ -133,17 +113,14 @@ const updateAvatar = (req, res) => {
     },
   )
     .orFail(() => {
-      throw new Error('NotFound');
+      throw new NotFoundError();
     })
     .then((data) => res.send({ data }))
     .catch((err) => {
-      if (err.message === 'NotFound') {
-        res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
-        return;
+      if (err.name === 'CastError' || err.name === 'ValidationError') {
+        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
       }
-      err.name === 'CastError' || err.name === 'ValidationError'
-        ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
-        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      next(err);
     });
 };
 

@@ -1,90 +1,79 @@
-/* eslint-disable no-unused-expressions */
-/* eslint-disable prefer-promise-reject-errors */
-
 const Card = require('../models/card');
-const E = require('../errors');
+const ValidationError = require('../errors/validation-error');
+const NotFoundError = require('../errors/not-found-error');
 
-const getAllCards = (req, res) => {
+const getAllCards = (req, res, next) => {
   Card.find({})
     .then((data) => res.send({ data }))
-    .catch(() => res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE));
+    .catch(next);
 };
 
-const deleteCardById = (req, res) => {
+const deleteCardById = (req, res, next) => {
   Card.findById(req.params.cardId)
     .orFail(() => {
-      throw new Error('NotFound');
+      throw new NotFoundError();
     })
     .then((card) => card.owner.equals(req.user._id))
     .then((match) => {
-      console.log(match);
       if (!match) {
-        return Promise.reject(new Error());
+        throw new Error();
       }
       return Card.findByIdAndRemove(req.params.cardId);
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.message === 'NotFound') {
-        res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
-        return;
+      if (err.name === 'CastError') {
+        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
       }
-      err.name === 'CastError'
-        ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
-        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      next(err);
     });
 };
 
-const createCard = (req, res) => {
+const createCard = (req, res, next) => {
   const body = { ...req.body, owner: req.user._id };
   Card.create(body)
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
-      err.name === 'ValidationError'
-        ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
-        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      if (err.name === 'ValidationError') {
+        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
+      }
+      next(err);
     });
 };
 
-const addLike = (req, res) => {
+const addLike = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
     .orFail(() => {
-      throw new Error('NotFound');
+      throw new NotFoundError();
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.message === 'NotFound') {
-        res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
-        return;
+      if (err.name === 'CastError') {
+        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
       }
-      err.name === 'CastError'
-        ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
-        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      next(err);
     });
 };
 
-const removeLike = (req, res) => {
+const removeLike = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
     { new: true },
   )
     .orFail(() => {
-      throw new Error('NotFound');
+      throw new NotFoundError();
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.message === 'NotFound') {
-        res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE);
-        return;
+      if (err.name === 'CastError') {
+        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
       }
-      err.name === 'CastError'
-        ? res.status(E.VALIDATION_ERROR_CODE).send(E.VALIDATION_ERROR_MESSAGE)
-        : res.status(E.DEFAULT_ERROR_CODE).send(E.DEFAULT_ERROR_MESSAGE);
+      next(err);
     });
 };
 

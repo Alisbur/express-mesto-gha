@@ -1,7 +1,9 @@
 /* eslint-disable prefer-regex-literals */
 
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 const validator = require('validator');
+const ValidationError = require('../errors/validation-error');
 
 const userSchema = new mongoose.Schema({
 
@@ -24,7 +26,8 @@ const userSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(v) {
-        return validator.isURL(v);
+        // eslint-disable-next-line no-useless-escape
+        return /^https?:\/\/(www\.)?[a-z0-9\-\._~:\/\?#\[\]@\!\$\&'\(\)\*\+,;=]+#?$/i.test(v);
       },
       message: 'Ошибка в адресе изображения аватара',
     },
@@ -49,5 +52,23 @@ const userSchema = new mongoose.Schema({
 }, {
   versionKey: false,
 });
+
+userSchema.statics.findUserByCredentials = function (email, password) {
+  return this.findOne({ email }).select('+password')
+    .then((user) => {
+      if (!user) {
+        throw new ValidationError();
+      }
+      console.log(user);
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            throw new ValidationError();
+          }
+
+          return user;
+        });
+    });
+};
 
 module.exports = mongoose.model('user', userSchema);

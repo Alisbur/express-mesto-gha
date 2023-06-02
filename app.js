@@ -4,8 +4,9 @@ const { PORT = 3000 } = process.env;
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const E = require('./errors');
-const { login, createUser } = require('./controllers/user')
+const { login, createUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
+const NotFoundError = require('./errors/not-found-error');
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 
@@ -22,7 +23,18 @@ app.use(auth);
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
-app.use('*', (req, res) => res.status(E.NOT_FOUND_ERROR_CODE).send(E.NOT_FOUND_ERROR_MESSAGE));
+app.use('/', (req, res, next) => Promise.reject(new NotFoundError('Страница не найдена')).catch(next));
+
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500
+        ? 'На сервере произошла ошибка'
+        : message,
+    });
+});
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
