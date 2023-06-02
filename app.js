@@ -3,7 +3,6 @@ const express = require('express');
 const { PORT = 3000 } = process.env;
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const E = require('./errors');
 const { login, createUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
 const NotFoundError = require('./errors/not-found-error');
@@ -25,6 +24,7 @@ app.use('/cards', require('./routes/cards'));
 
 app.use('/', (req, res, next) => Promise.reject(new NotFoundError('Страница не найдена')).catch(next));
 
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   const { statusCode = 500, message } = err;
   res
@@ -37,5 +37,6 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(`App listening on port ${PORT}`);
 });
