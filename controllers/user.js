@@ -59,9 +59,9 @@ const createUser = (req, res, next) => {
         email: req.body.email,
         password: hash,
       };
-      return User.create(userData).select('-password');
+      return User.create(userData);
     })
-    .then((data) => res.status(201).send({ data }))
+    .then(({ name, about, avatar, email, _id }) => res.status(201).send({ name, about, avatar, email, _id }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new ValidationError());
