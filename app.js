@@ -3,7 +3,7 @@ const express = require('express');
 const { PORT = 3000 } = process.env;
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { errors } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 const { login, createUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
 
@@ -16,8 +16,19 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.post('/signin', login);
-app.post('/signup', createUser);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().pattern(/^[a-z][a-z0-9]*@[a-z][a-z0-9]*\.[a-z]+$/i),
+    password: Joi.string().required(),
+  }),
+}), login);
+
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().pattern(/^[a-z][a-z0-9]*@[a-z][a-z0-9]*\.[a-z]+$/i),
+    password: Joi.string().required(),
+  }),
+}), createUser);
 
 app.use(auth);
 
