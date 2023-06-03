@@ -22,7 +22,7 @@ const getAllUsers = (req, res, next) => {
 };
 
 const getCurrentUser = (req, res, next) => {
-  User.findById(req.user._id).select('+password')
+  User.findById(req.user._id)
     .orFail(() => {
       throw new NotFoundError();
     })
@@ -59,7 +59,7 @@ const createUser = (req, res, next) => {
         email: req.body.email,
         password: hash,
       };
-      return User.create(userData);
+      return User.create(userData).select('-password');
     })
     .then((data) => res.status(201).send({ data }))
     .catch((err) => {
