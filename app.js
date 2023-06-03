@@ -18,17 +18,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().pattern(/^[a-z][a-z0-9]*@[a-z][a-z0-9]*\.[a-z]+$/i),
+    email: Joi.string().required().pattern(/^[a-z0-9]+@[a-z0-9]+\.[a-z]+$/i),
     password: Joi.string().required(),
   }),
 }), login);
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    about: Joi.string().required().min(2).max(30),
-    avatar: Joi.string().required().pattern(/^https?:\/\/(www\.)?[a-z0-9\-._~:/?#[\]@!$&'()*+,;=]+#?$/i),
-    email: Joi.string().required().pattern(/^[a-z][a-z0-9]*@[a-z][a-z0-9]*\.[a-z]+$/i),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern(/^https?:\/\/(www\.)?[a-z0-9\-._~:/?#[\]@!$&'()*+,;=]+#?$/i),
+    email: Joi.string().required().pattern(/^[a-z0-9]+@[a-z0-9]+\.[a-z]+$/i),
     password: Joi.string().required(),
   }),
 }), createUser);
