@@ -29,7 +29,7 @@ const getCurrentUser = (req, res, next) => {
     .then((data) => res.send({ data }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
+        next(new ValidationError());
       }
       next(err);
     });
@@ -43,7 +43,7 @@ const getUserById = (req, res, next) => {
     .then((data) => res.send({ data }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
+        next(new ValidationError());
       }
       next(err);
     });
@@ -59,12 +59,12 @@ const createUser = (req, res, next) => {
         email: req.body.email,
         password: hash,
       };
-      return User.create(userData);
+      return User.create(userData).select('-password');
     })
     .then((data) => res.status(201).send({ data }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
+        next(new ValidationError());
       }
       if (err.code === 11000) {
         next(new ConflictError());
@@ -93,7 +93,7 @@ const updateProfile = (req, res, next) => {
     .then((data) => res.send({ data }))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
+        next(new ValidationError());
       }
       next(err);
     });
@@ -118,7 +118,7 @@ const updateAvatar = (req, res, next) => {
     .then((data) => res.send({ data }))
     .catch((err) => {
       if (err.name === 'CastError' || err.name === 'ValidationError') {
-        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
+        next(new ValidationError());
       }
       next(err);
     });

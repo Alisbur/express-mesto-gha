@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const ValidationError = require('../errors/validation-error');
 const NotFoundError = require('../errors/not-found-error');
+const ForbiddenError = require('../errors/forbidden-error');
 
 const getAllCards = (req, res, next) => {
   Card.find({})
@@ -16,14 +17,14 @@ const deleteCardById = (req, res, next) => {
     .then((card) => card.owner.equals(req.user._id))
     .then((match) => {
       if (!match) {
-        throw new Error();
+        throw new ForbiddenError();
       }
       return Card.findByIdAndRemove(req.params.cardId);
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
+        next(new ValidationError());
       }
       next(err);
     });
@@ -35,7 +36,7 @@ const createCard = (req, res, next) => {
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
+        next(new ValidationError());
       }
       next(err);
     });
@@ -53,7 +54,7 @@ const addLike = (req, res, next) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
+        next(new ValidationError());
       }
       next(err);
     });
@@ -71,7 +72,7 @@ const removeLike = (req, res, next) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ValidationError('переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля'));
+        next(new ValidationError());
       }
       next(err);
     });

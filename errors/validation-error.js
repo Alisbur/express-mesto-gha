@@ -1,5 +1,5 @@
 class ValidationError extends Error {
-  constructor(message = 'Неправильные почта или пароль') {
+  constructor(message = 'переданы некорректные данные в методы создания карточки, пользователя, обновления аватара пользователя или профиля') {
     super(message);
     this.statusCode = 400;
   }
