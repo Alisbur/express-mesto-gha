@@ -15,8 +15,7 @@ const cardSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(v) {
-        const regex = new RegExp(/https?:\/\/(\w|\d|\/)+\.\w+/);
-        return regex.test(v);
+        return /^https?:\/\/(www\.)?[a-z0-9\-._~:/?#[\]@!$&'()*+,;=]+#?$/i.test(v);
       },
       message: 'Ошибка в адресе изображения',
     },

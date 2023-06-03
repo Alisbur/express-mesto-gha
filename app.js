@@ -3,8 +3,10 @@ const express = require('express');
 const { PORT = 3000 } = process.env;
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const { errors } = require('celebrate');
 const { login, createUser } = require('./controllers/user');
 const auth = require('./middlewares/auth');
+
 const NotFoundError = require('./errors/not-found-error');
 
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
@@ -23,6 +25,8 @@ app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 app.use('/', (req, res, next) => Promise.reject(new NotFoundError('Страница не найдена')).catch(next));
+
+app.use(errors());
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
