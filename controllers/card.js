@@ -12,21 +12,22 @@ const getAllCards = (req, res, next) => {
 const deleteCardById = (req, res, next) => {
   Card.findById(req.params.cardId)
     .orFail(() => {
-      throw new NotFoundError();
+      throw new NotFoundError('карточка не найдена');
     })
     .then((card) => card.owner.equals(req.user._id))
     .then((match) => {
       if (!match) {
-        throw new ForbiddenError();
+        throw new ForbiddenError('только создатель карточки может её удалить');
       }
       return Card.findByIdAndRemove(req.params.cardId);
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ValidationError());
+        next(new ValidationError('переданы некорректные данные карточки'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -36,7 +37,7 @@ const createCard = (req, res, next) => {
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new ValidationError());
+        next(new ValidationError('переданы некорректные данные карточки'));
       }
       next(err);
     });
@@ -49,14 +50,15 @@ const addLike = (req, res, next) => {
     { new: true },
   )
     .orFail(() => {
-      throw new NotFoundError();
+      throw new NotFoundError('карточка не найдена');
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ValidationError());
+        next(new ValidationError('переданы некорректные данные карточки'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -67,14 +69,15 @@ const removeLike = (req, res, next) => {
     { new: true },
   )
     .orFail(() => {
-      throw new NotFoundError();
+      throw new NotFoundError('карточка не найдена');
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new ValidationError());
+        next(new ValidationError('переданы некорректные данные карточки'));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 

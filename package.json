@@ -9,7 +9,7 @@
     "lint": "npx eslint ."
   },
   "keywords": [],
-  "author": "",
+  "author": "Evgeny",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",

@@ -5,7 +5,7 @@ const cardController = require('../controllers/card');
 cardsRouter.get('/', cardController.getAllCards);
 cardsRouter.delete('/:cardId', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().required().alphanum().length(24),
+    cardId: Joi.string().required().hex().length(24),
   }),
 }), cardController.deleteCardById);
 
@@ -18,13 +18,13 @@ cardsRouter.post('/', celebrate({
 
 cardsRouter.put('/:cardId/likes', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().required().alphanum().length(24),
+    cardId: Joi.string().required().hex().length(24),
   }),
 }), cardController.addLike);
 
 cardsRouter.delete('/:cardId/likes', celebrate({
   params: Joi.object().keys({
-    cardId: Joi.string().required().alphanum().length(24),
+    cardId: Joi.string().required().hex().length(24),
   }),
 }), cardController.removeLike);
 
